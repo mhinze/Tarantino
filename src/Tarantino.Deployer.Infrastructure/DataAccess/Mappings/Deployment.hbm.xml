@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	auto-import="true"
+	namespace="Tarantino.Deployer.Core.Model"
+	assembly="Tarantino.Deployer.Core"
+	default-lazy="true">
+
+	<class name="Deployment" dynamic-update="true">
+		<id	name="Id" column="DeploymentId" type="Guid" access="property">
+			<generator class="guid.comb" />
+		</id>
+
+		<property name="Application" />
+		<property name="Environment" />
+		<property name="DeployedOn" type="DateTime" />
+		<property name="DeployedBy" />
+		<property name="CertifiedOn" type="DateTime" />
+		<property name="CertifiedBy" />
+		<property name="Version" />
+		<many-to-one name="Output" class="DeploymentOutput" unique="true" column="DeploymentOutputId" cascade="all-delete-orphan"/>
+
+		<property name="Result" type="Tarantino.Infrastructure.Commons.DataAccess.ORMapper.EnumerationType`1[[Tarantino.Deployer.Core.Model.DeploymentResult, Tarantino.Deployer.Core]], Tarantino.Infrastructure" />
+	</class>
+</hibernate-mapping>

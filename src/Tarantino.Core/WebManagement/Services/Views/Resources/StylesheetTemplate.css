@@ -1,0 +1,62 @@
+body 
+{ 
+	margin:0 0 0 0;
+}
+
+table 
+{ 
+	background-color:#FFF;
+	border-collapse:collapse;
+	padding:5px;
+	width:100%;
+}
+
+td { 
+	border:1px solid black;
+	font-family: verdana;
+	font-size: 12;
+	text-decoration: none; 
+	background-color:#FFF;
+	padding:5px;
+}
+
+th { 
+	background-color: #999999;
+	border:1px solid #000;
+	font-family: verdana;
+	font-size: 14;
+	text-weight: bold; 
+	text-decoration: none; 
+}
+
+.center { 
+	text-align:center;
+	}
+
+.over
+{ 
+	background-color: #CFCFCF;
+}
+
+.out
+{ 
+	background-color: #FFFFFF;
+}
+
+.Online
+{ 
+	color: #FFF;
+	text-align:center;
+	background-color: #393;
+	text-decoration: none; 
+	font-family: verdana;
+	font-size: 12;
+	text-decoration: none; 
+}
+
+.Offline,.Down
+{ 
+	text-align:center;
+	color: #C00;
+	text-decoration: underline; 
+}

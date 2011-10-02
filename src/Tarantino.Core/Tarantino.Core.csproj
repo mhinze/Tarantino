@@ -1,0 +1,303 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3F02EEBD-5B3B-4C5F-B2E7-4F5DFF6B3F03}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tarantino.Core</RootNamespace>
+    <AssemblyName>Tarantino.Core</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\NHibernate\1.2.1\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap, Version=2.5.0.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\StructureMap\2.5\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Commons\Model\Enumerations\BoundedEnumeration.cs" />
+    <Compile Include="Commons\Model\Enumerations\ComparisonOperator.cs" />
+    <Compile Include="Commons\Model\Enumerations\Enumeration.cs" />
+    <Compile Include="Commons\Model\Enumerations\PersistenceMode.cs" />
+    <Compile Include="Commons\Model\Enumerations\SortOrder.cs" />
+    <Compile Include="Commons\Model\Enumerations\TimePeriod.cs" />
+    <Compile Include="Commons\Model\ISystemUser.cs" />
+    <Compile Include="Commons\Model\PersistentObject.cs" />
+    <Compile Include="Commons\Model\Specifications\AndSpecification.cs" />
+    <Compile Include="Commons\Model\Specifications\BaseSpecification.cs" />
+    <Compile Include="Commons\Model\Specifications\ISpecification.cs" />
+    <Compile Include="Commons\Model\Specifications\NotSpecification.cs" />
+    <Compile Include="Commons\Model\Specifications\OrSpecification.cs" />
+    <Compile Include="Commons\Services\Caching\ICacheManager.cs" />
+    <Compile Include="Commons\Services\Caching\Impl\Cache.cs" />
+    <Compile Include="Commons\Services\Caching\Impl\CacheManager.cs" />
+    <Compile Include="Commons\Services\DataFileManagement\IDataFileReader.cs" />
+    <Compile Include="Commons\Services\DataFileManagement\IDataTableReader.cs" />
+    <Compile Include="Commons\Services\DataFileManagement\IExcelWorkbookReader.cs" />
+    <Compile Include="Commons\Services\DataFileManagement\IExcelWorksheetReader.cs" />
+    <Compile Include="Commons\Services\DataFileManagement\Impl\DataFileReader.cs" />
+    <Compile Include="Commons\Services\DataFileManagement\Impl\DataTableReader.cs" />
+    <Compile Include="Commons\Services\DataFileManagement\Impl\ExcelWorkbookReader.cs" />
+    <Compile Include="Commons\Services\DataFileManagement\Impl\ExcelWorksheetReader.cs" />
+    <Compile Include="Commons\Services\Environment\IApplicationDomain.cs" />
+    <Compile Include="Commons\Services\Environment\IAssemblyContext.cs" />
+    <Compile Include="Commons\Services\Environment\IMachineConsole.cs" />
+    <Compile Include="Commons\Services\Environment\IDateContext.cs" />
+    <Compile Include="Commons\Services\Environment\IFileStreamFactory.cs" />
+    <Compile Include="Commons\Services\Environment\IFileSystem.cs" />
+    <Compile Include="Commons\Services\Environment\IGuidGenerator.cs" />
+    <Compile Include="Commons\Services\Environment\IMachineEnvironment.cs" />
+    <Compile Include="Commons\Services\Environment\Impl\ApplicationDomain.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commons\Services\Environment\Impl\AssemblyContext.cs" />
+    <Compile Include="Commons\Services\Environment\Impl\MachineConsole.cs" />
+    <Compile Include="Commons\Services\Environment\Impl\DateContext.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commons\Services\Environment\Impl\FileStreamFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commons\Services\Environment\Impl\FileSystem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commons\Services\Environment\Impl\GuidGenerator.cs" />
+    <Compile Include="Commons\Services\Environment\Impl\MachineEnvironment.cs" />
+    <Compile Include="Commons\Services\Environment\Impl\ResourceFileLocator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commons\Services\Environment\Impl\SystemClock.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commons\Services\Environment\Impl\SystemEnvironment.cs" />
+    <Compile Include="Commons\Services\Environment\Impl\TypeActivator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commons\Services\Environment\IResourceFileLocator.cs" />
+    <Compile Include="Commons\Services\Environment\ISystemClock.cs" />
+    <Compile Include="Commons\Services\Environment\ISystemEnvironment.cs" />
+    <Compile Include="Commons\Services\Environment\ITypeActivator.cs" />
+    <Compile Include="Commons\Services\ListManagement\IEnumerationHelper.cs" />
+    <Compile Include="Commons\Services\ListManagement\Impl\EnumerableHelper.cs" />
+    <Compile Include="Commons\Services\ListManagement\Impl\EnumerationHelper.cs" />
+    <Compile Include="Commons\Services\ListManagement\Impl\RichList.cs" />
+    <Compile Include="Commons\Services\ListManagement\IRichList.cs" />
+    <Compile Include="Commons\Services\Logging\Logger.cs" />
+    <Compile Include="Commons\Services\RandomDataCreation\ICodeGenerator.cs" />
+    <Compile Include="Commons\Services\RandomDataCreation\Impl\CodeGenerator.cs" />
+    <Compile Include="Commons\Services\RandomDataCreation\Impl\RandomCharacterGenerator.cs" />
+    <Compile Include="Commons\Services\RandomDataCreation\Impl\RandomNumberGenerator.cs" />
+    <Compile Include="Commons\Services\RandomDataCreation\IRandomCharacterGenerator.cs" />
+    <Compile Include="Commons\Services\RandomDataCreation\IRandomNumberGenerator.cs" />
+    <Compile Include="Commons\Services\Repositories\Criterion.cs" />
+    <Compile Include="Commons\Services\Repositories\CriterionSet.cs" />
+    <Compile Include="Commons\Services\Configuration\IApplicationConfiguration.cs" />
+    <Compile Include="Commons\Services\Configuration\IApplicationSettings.cs" />
+    <Compile Include="Commons\Services\Configuration\IConfigurationReader.cs" />
+    <Compile Include="Commons\Services\Configuration\Impl\ApplicationConfiguration.cs" />
+    <Compile Include="Commons\Services\Configuration\Impl\ApplicationSettings.cs" />
+    <Compile Include="Commons\Services\Configuration\Impl\ConfigurationReader.cs" />
+    <Compile Include="Commons\Services\Configuration\Impl\ElementCollection.cs" />
+    <Compile Include="Commons\Services\Configuration\Impl\NamedElement.cs" />
+    <Compile Include="Commons\Services\Configuration\IServiceLocator.cs" />
+    <Compile Include="Commons\Services\Repositories\IPersistentObjectRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commons\Services\Repositories\ISystemUserRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commons\Services\Security\IAuthenticationService.cs" />
+    <Compile Include="Commons\Services\Security\IEncryptionEngine.cs" />
+    <Compile Include="Commons\Services\Security\IForgottenPasswordMailer.cs" />
+    <Compile Include="Commons\Services\Security\IForgottenPasswordMailFactory.cs" />
+    <Compile Include="Commons\Services\Security\IForgottenPasswordService.cs" />
+    <Compile Include="Commons\Services\Security\IHashAlgorithm.cs" />
+    <Compile Include="Commons\Services\Security\ILoginChecker.cs" />
+    <Compile Include="Commons\Services\Security\ILoginService.cs" />
+    <Compile Include="Commons\Services\Security\Impl\AesEncryptionEngine.cs" />
+    <Compile Include="Commons\Services\Security\Impl\ForgottenPasswordMailer.cs" />
+    <Compile Include="Commons\Services\Security\Impl\ForgottenPasswordMailFactory.cs" />
+    <Compile Include="Commons\Services\Security\Impl\ForgottenPasswordService.cs" />
+    <Compile Include="Commons\Services\Security\Impl\LoginChecker.cs" />
+    <Compile Include="Commons\Services\Security\Impl\LoginService.cs" />
+    <Compile Include="Commons\Services\Security\Impl\PrincipalFactory.cs" />
+    <Compile Include="Commons\Services\Security\Impl\RoleManager.cs" />
+    <Compile Include="Commons\Services\Security\Impl\SecurityContext.cs" />
+    <Compile Include="Commons\Services\Security\Impl\SHA512HashAlgorithm.cs" />
+    <Compile Include="Commons\Services\Security\Impl\SystemUserContextManager.cs" />
+    <Compile Include="Commons\Services\Security\Impl\WindowsIdentity.cs" />
+    <Compile Include="Commons\Services\Security\IPrincipalFactory.cs" />
+    <Compile Include="Commons\Services\Security\IRoleManager.cs" />
+    <Compile Include="Commons\Services\Security\ISecurityContext.cs" />
+    <Compile Include="Commons\Services\Security\ISystemUserContextManager.cs" />
+    <Compile Include="Commons\Services\Security\IWindowsIdentity.cs" />
+    <Compile Include="Commons\Services\Web\IMailSender.cs" />
+    <Compile Include="Commons\Services\Web\Impl\SmtpMailSender.cs" />
+    <Compile Include="Commons\Services\Web\IWebContext.cs" />
+    <Compile Include="Commons\Services\Web\IWebDataReader.cs" />
+    <Compile Include="CoreDependencyRegistry.cs" />
+    <Compile Include="Daemon\Services\Impl\ServiceAgentAggregator.cs" />
+    <Compile Include="Daemon\Services\Impl\ServiceRunner.cs" />
+    <Compile Include="Daemon\Services\IServiceAgent.cs" />
+    <Compile Include="Daemon\Services\IServiceAgentAggregator.cs" />
+    <Compile Include="Daemon\Services\IServiceAgentFactory.cs" />
+    <Compile Include="Daemon\Services\IServiceRunner.cs" />
+    <Compile Include="Commons\Services\DataFileManagement\Impl\TokenReplacer.cs" />
+    <Compile Include="Commons\Services\DataFileManagement\ITokenReplacer.cs" />
+    <Compile Include="CoreDependencyRegistrar.cs" />
+    <Compile Include="Keys.cs" />
+    <Compile Include="WebManagement\Model\ApplicationInstance.cs" />
+    <Compile Include="WebManagement\Services\IAdministratorSecurityChecker.cs" />
+    <Compile Include="WebManagement\Services\IApplicationInstanceCache.cs" />
+    <Compile Include="WebManagement\Services\IApplicationInstanceContext.cs" />
+    <Compile Include="WebManagement\Services\IApplicationInstanceFactory.cs" />
+    <Compile Include="WebManagement\Services\IApplicationListingManager.cs" />
+    <Compile Include="WebManagement\Services\IApplicationListingRowView.cs" />
+    <Compile Include="WebManagement\Services\IAvailabilityStatusUpdater.cs" />
+    <Compile Include="WebManagement\Services\ICurrentApplicationInstanceRetriever.cs" />
+    <Compile Include="WebManagement\Services\IExceptionHandlingLoadBalanceStatusManager.cs" />
+    <Compile Include="WebManagement\Services\IExternalUrlChecker.cs" />
+    <Compile Include="WebManagement\Services\IFileExtensionChecker.cs" />
+    <Compile Include="WebManagement\Services\IMaintenancePageRedirector.cs" />
+    <Compile Include="WebManagement\Services\IMaintenanceRedirectionChecker.cs" />
+    <Compile Include="WebManagement\Services\Impl\ApplicationListingManager.cs" />
+    <Compile Include="WebManagement\Services\Impl\ExternalUrlChecker.cs" />
+    <Compile Include="WebManagement\Services\Impl\FileExtensionChecker.cs" />
+    <Compile Include="WebManagement\Services\Impl\MaintenancePageRedirector.cs" />
+    <Compile Include="WebManagement\Services\Impl\MaintenanceRedirectionChecker.cs" />
+    <Compile Include="WebManagement\Services\Views\IApplicationListingBodyView.cs" />
+    <Compile Include="WebManagement\Services\Views\IApplicationListingView .cs" />
+    <Compile Include="WebManagement\Services\Views\ILoadBalancerBodyView.cs" />
+    <Compile Include="WebManagement\Services\ILoadBalanceStatusManager.cs" />
+    <Compile Include="WebManagement\Services\Impl\AdministratorSecurityChecker.cs" />
+    <Compile Include="WebManagement\Services\Impl\ApplicationInstanceCache.cs" />
+    <Compile Include="WebManagement\Services\Impl\ApplicationInstanceContext.cs" />
+    <Compile Include="WebManagement\Services\Impl\ApplicationInstanceFactory.cs" />
+    <Compile Include="WebManagement\Services\Impl\AvailabilityStatusUpdater.cs" />
+    <Compile Include="WebManagement\Services\Impl\CurrentApplicationInstanceRetriever.cs" />
+    <Compile Include="WebManagement\Services\Impl\ExceptionHandlingLoadBalanceStatusManager.cs" />
+    <Compile Include="WebManagement\Services\Views\Impl\ApplicationListingBodyView.cs" />
+    <Compile Include="WebManagement\Services\Views\Impl\ApplicationListingRowView.cs" />
+    <Compile Include="WebManagement\Services\Views\Impl\ApplicationListingView.cs" />
+    <Compile Include="WebManagement\Services\Views\Impl\LoadBalancerBodyView.cs" />
+    <Compile Include="WebManagement\Services\Impl\LoadBalanceStatusManager.cs" />
+    <Compile Include="WebManagement\Services\Impl\SecureAvailabilityStatusUpdater.cs" />
+    <Compile Include="WebManagement\Services\ISecureAvailabilityStatusUpdater.cs" />
+    <Compile Include="WebManagement\Services\Repositories\IApplicationInstanceRepository.cs" />
+    <Compile Include="WebManagement\Services\Views\ILoadBalancerView.cs" />
+    <Compile Include="WebManagement\Services\Views\IMenuView.cs" />
+    <Compile Include="WebManagement\Services\Views\Impl\LoadBalancerView.cs" />
+    <Compile Include="WebManagement\Services\Views\Impl\MenuView.cs" />
+    <Compile Include="WebManagement\Services\Views\Impl\PageView.cs" />
+    <Compile Include="WebManagement\Services\Views\IPageView.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WebManagement\Services\Views\Resources\MenuTemplate.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WebManagement\Services\Views\Resources\StylesheetTemplate.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WebManagement\Services\Views\Resources\PageTemplate.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WebManagement\Services\Views\Resources\LoadBalancerBodyTemplate.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WebManagement\Services\Views\Resources\ApplicationListingBodyTemplate.html" />
+    <EmbeddedResource Include="WebManagement\Services\Views\Resources\ApplicationListingReadOnlyBodyTemplate.html" />
+    <EmbeddedResource Include="WebManagement\Services\Views\Resources\ApplicationListingReadOnlyRowOneFragment.html" />
+    <EmbeddedResource Include="WebManagement\Services\Views\Resources\ApplicationListingRowOneFragment.html" />
+    <EmbeddedResource Include="WebManagement\Services\Views\Resources\ApplicationListingRowNFragment.html" />
+    <EmbeddedResource Include="WebManagement\Services\Views\Resources\ApplicationListingReadOnlyRowNFragment.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

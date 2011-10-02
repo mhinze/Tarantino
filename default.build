@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--EXTERNAL_PROPERTIES: CCNetLabel;branch.build.number;usdDatabaseVersion;svn.username;svn.password-->
+<project name="Tarantino" default="local" xmlns="http://nant.sf.net/release/0.85-rc4/nant.xsd">
+
+	<!-- NAnt settings -->
+	<property name="nant.settings.currentframework" value="net-4.0" />
+
+	<!-- Version settings -->
+	<property name="company" value="${project::get-name()}"/>
+	<property name="project" value="${project::get-name()}"/>
+	<property name="copyright" value="${company}, ${datetime::get-year(datetime::now())}"/>
+
+	<!-- Compilation settings -->
+	<property name="project.config" value="debug" />
+	<property name="dir.test" value="${dir.build}\test" dynamic="true" />
+	<property name="dir.build" value="build" />
+
+	<!-- Testing settings -->
+	<property name="test.types" value="Unit,Integration" />
+	<property name="nunit.console" value="lib\NUnit\2.4.3\nunit-console.exe" />
+	<property name="ncover.console" value="lib\NCover\1.5.8\ncover.console.exe" />
+
+	<!-- Package settings -->
+	<property name="svn.exe" value="lib\subversion\1.4.3\svn.exe" />
+	<property name="dir.package" value="${dir.build}\package" dynamic="true"  />
+  <property name="dir.batchjobs.package" value="${dir.build}\batchjobspackage" dynamic="true"  />
+  <property name="dir.dbmanager.package" value="${dir.build}\dbmanagerpackage" dynamic="true"  />
+  <property name="dir.deployer.package" value="${dir.build}\deployerpackage" dynamic="true"  />
+
+  <!-- External targets -->
+	<target name="local" depends="debug, rebuildDatabases, compile, move, test"/>
+	<target name="localWithVersion" depends="debug, rebuildDatabases, version, compile, move, test"/>
+	<target name="localWithCoverage" depends="debug, rebuildDatabases, version, compile, move, coverage"/>
+	<target name="localWithPackage" depends="rebuildDatabases, compile, move, test, merge, package"/>
+	<target name="localWithPackageAndCommit" depends="rebuildDatabases, version, compile, move, test, package, commit"/>
+
+	<target name="debug">
+		<property name="project.config" value="debug" />
+	</target>
+
+	<target name="compile">
+		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe" commandline="src\${project}.sln /t:Clean /p:Configuration=${project.config} /v:q" workingdir="." />
+		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe" commandline="src\${project}.sln /t:Rebuild /p:Configuration=${project.config} /v:q" workingdir="." />
+	</target>
+
+	<target name="move">
+		<!-- clear out existing testing directory -->
+		<delete dir="${dir.test}" failonerror="false" />
+
+		<!-- copy test assemblies -->
+		<foreach item="String" in="${test.types}" delim="," property="test.type">
+			<property name="assembly" value="${project}.${test.type}Tests" />
+			<property name="deployer.assembly" value="${project}.Deployer.${test.type}Tests" />
+
+			<copy todir="${dir.test}" verbose="false">
+				<fileset basedir="src/${assembly}/bin/${project.config}">
+					<include name="**"/>
+				</fileset>
+			</copy>
+
+			<copy todir="${dir.test}" verbose="false">
+				<fileset basedir="src/${deployer.assembly}/bin/${project.config}">
+					<include name="**"/>
+				</fileset>
+			</copy>
+		</foreach>
+	</target>
+
+	<target name="test">
+		<foreach item="String" in="${test.types}" delim="," property="test.type">
+			<property name="assembly" value="${dir.test}\${project}.${test.type}Tests.dll" />
+			<property name="deployer.assembly" value="${dir.test}\${project}.Deployer.${test.type}Tests.dll" />
+
+			<echo message="Testing: ${assembly}" />
+
+			<nunit2 failonerror="true" verbose="true">
+				<formatter type="Plain" />
+				<test assemblyname="${assembly}" />
+			</nunit2>
+
+			<echo message="Testing: ${deployer.assembly}" />
+
+			<nunit2 failonerror="true" verbose="true">
+				<formatter type="Plain" />
+				<test assemblyname="${deployer.assembly}" />
+			</nunit2>
+		</foreach>
+
+	</target>
+
+	<target name="coverage">
+		<foreach item="String" in="${test.types}" delim="," property="test.type">
+			<property name="assembly" value="${project}.${test.type}Tests" />
+			<exec program="${ncover.console}" commandline="//reg //w ${dir.test} //x ${dir.test}\${assembly}.Coverage.xml //v ${nunit.console} ${assembly}.dll" workingdir="." />
+		</foreach>
+	</target>
+
+	<target name="version">
+		<property name="svn.args" value="--username ${svn.username} --password ${svn.password} --non-interactive" />
+
+		<exec program="${svn.exe}" commandline="info LatestVersion ${svn.args} --xml --revision HEAD" output="svninfo.xml" append="false" verbose="false"/>
+		<xmlpeek file="svninfo.xml" xpath="/info/entry/@revision" property="revision"/>
+
+		<property name="revision" value="${int::parse(revision) + 1}"/>
+
+		<property name="project.fullversion" value="1.0.${revision}.0"/>
+
+		<echo message="MARKING THIS BUILD AS VERSION ${project.fullversion}" />
+		<delete file="src/CommonAssemblyInfo.cs" failonerror="false"/>
+		<asminfo output="src/CommonAssemblyInfo.cs" language="CSharp">
+			<imports>
+				<import namespace="System" />
+				<import namespace="System.Reflection" />
+				<import namespace="System.Runtime.InteropServices" />
+			</imports>
+			<attributes>
+				<attribute type="ComVisibleAttribute" value="false" />
+				<attribute type="AssemblyVersionAttribute" value="${project.fullversion}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${project.fullversion}" />
+				<attribute type="AssemblyCopyrightAttribute" value="${copyright}" />
+				<attribute type="AssemblyProductAttribute" value="${project}" />
+				<attribute type="AssemblyCompanyAttribute" value="${company}" />
+				<attribute type="AssemblyConfigurationAttribute" value="${project.config}" />
+				<attribute type="AssemblyInformationalVersionAttribute" value="${project.fullversion}" />
+			</attributes>
+			<references>
+				<include name="System.dll" />
+			</references>
+		</asminfo>
+	</target>
+
+  <target name="merge">
+    <exec program="lib\ilmerge\ilmerge.exe" 
+          commandline="/t:library /out:src\Tarantino.DatabaseManager.tasks\bin\${project.config}\Tarantino.Nant.Tasks.dll  src\Tarantino.DatabaseManager.tasks\bin\${project.config}\tarantino.databasemanager.tasks.dll src\Tarantino.DatabaseManager.tasks\bin\${project.config}\tarantino.databasemanager.core.dll " 
+          workingdir="." />
+    <exec program="lib\ilmerge\ilmerge.exe"
+          commandline="/t:exe /out:src\Tarantino.DatabaseManager.Console\bin\${project.config}\DatabaseDeployer.exe  src\Tarantino.DatabaseManager.Console\bin\${project.config}\tarantino.databasemanager.console.exe src\Tarantino.DatabaseManager.Console\bin\${project.config}\tarantino.databasemanager.core.dll "
+          workingdir="." />
+  </target>
+
+	<target name="package">
+
+    <delete dir="${dir.dbmanager.package}" failonerror="false" />
+    <copy todir="${dir.dbmanager.package}\UI" verbose="false" flatten="true" >
+      <fileset basedir="src">
+        <include name="**\Tarantino.DatabaseManager\bin\${project.config}\*.dll" />
+        <include name="**\Tarantino.DatabaseManager\bin\${project.config}\*.exe" />
+        <include name="**\Tarantino.DatabaseManager\bin\${project.config}\*.config" />
+        <include name="**\Tarantino.DatabaseManager\bin\${project.config}\StructureMap.config" />
+      </fileset>
+    </copy>
+    <copy todir="${dir.dbmanager.package}\Console" verbose="false" flatten="true" >
+      <fileset basedir="src">
+        <include name="**\Tarantino.DatabaseManager.Console\bin\${project.config}\DatabaseDeployer.*" />
+      </fileset>
+    </copy>
+    <copy todir="${dir.dbmanager.package}\Nant" verbose="false" flatten="true" >
+      <fileset basedir=".">
+        <include name="src\Tarantino.DatabaseManager.Tasks\bin\${project.config}\Tarantino.Nant.Tasks.dll" />
+      </fileset>
+    </copy>
+
+
+    <delete dir="${dir.batchjobs.package}" failonerror="false" />
+    <copy todir="${dir.batchjobs.package}" verbose="false">
+      <fileset basedir="src\BatchJobs.Console\bin\${project.config}" >
+        <include name="*.*" />
+      </fileset>
+    </copy>
+
+    <delete dir="${dir.deployer.package}" failonerror="false" />
+    <copy todir="${dir.deployer.package}\Setup" verbose="false">
+        <fileset basedir="src\Tarantino.DatabaseManager\bin\${project.config}" >
+          <include name="*.*" />
+      </fileset>
+    </copy>
+    <copy todir="${dir.deployer.package}" verbose="false">
+      <fileset basedir="src\Tarantino.Deployer\bin\${project.config}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${dir.deployer.package}" verbose="false">
+      <fileset basedir="src\Tarantino.Deployer.Console\bin\${project.config}">
+        <include name="**" />
+      </fileset>
+    </copy>
+    <copy todir="${dir.deployer.package}\NAnt" verbose="false">
+      <fileset basedir="lib\NAnt">
+        <include name="**" />
+      </fileset>
+    </copy>
+
+    <copy todir="${dir.deployer.package}\Subversion" verbose="false">
+      <fileset basedir="lib\Subversion\1.4.3">
+        <include name="**" />
+      </fileset>
+    </copy>
+
+
+    <delete dir="${dir.package}" failonerror="false" />
+
+		<copy todir="${dir.package}\NAnt" verbose="false">
+			<fileset basedir="lib\NAnt">
+				<include name="**" />
+			</fileset>
+		</copy>
+
+		<copy todir="${dir.package}\Subversion" verbose="false">
+			<fileset basedir="lib\Subversion\1.4.3">
+				<include name="**" />
+			</fileset>
+		</copy>
+    
+    
+
+    <copy todir="${dir.package}" verbose="false" flatten="true" >
+			<fileset basedir="src">
+				<include name="**\bin\${project.config}\*.dll" />
+				<include name="**\bin\${project.config}\*.exe" />
+				<include name="**\bin\${project.config}\*.build" />
+				<include name="**\bin\${project.config}\*.bat" />
+				<include name="**\bin\${project.config}\Subversion\**" />
+				<include name="**\bin\${project.config}\*.config" />
+				<include name="**\bin\${project.config}\StructureMap.config" />
+				<include name="**\bin\${project.config}\*.cfg.xml" />
+			</fileset>
+		</copy>
+
+		<copy todir="${dir.package}\Tarantino.Deployer.Database" verbose="false">
+			<fileset basedir="src\Tarantino.Deployer.Database">
+				<include name="**\*.sql" />
+			</fileset>
+		</copy>
+
+		<copy todir="${dir.package}\Tarantino.WebManagement.Database" verbose="false">
+			<fileset basedir="src\Tarantino.WebManagement.Database">
+				<include name="**\*.sql" />
+			</fileset>
+		</copy>
+
+		<property name="app.settings.path" value="/configuration/appSettings" />
+
+		<property name="deployerDatabaseManagerConfig" value="${dir.package}\Tarantino.DatabaseManager.exe.config"/>
+
+		<xmlpoke
+			file="${deployerDatabaseManagerConfig}"
+			xpath="${app.settings.path}/add[@key='Server']/@value"
+			value="." />
+
+		<xmlpoke
+			file="${deployerDatabaseManagerConfig}"
+			xpath="${app.settings.path}/add[@key='Database']/@value"
+			value="TarantinoDeployer" />
+
+		<xmlpoke
+			file="${deployerDatabaseManagerConfig}"
+			xpath="${app.settings.path}/add[@key='Username']/@value"
+			value="" />
+
+		<xmlpoke
+			file="${deployerDatabaseManagerConfig}"
+			xpath="${app.settings.path}/add[@key='Password']/@value"
+			value="" />
+
+		<xmlpoke
+			file="${deployerDatabaseManagerConfig}"
+			xpath="${app.settings.path}/add[@key='IntegratedSecurity']/@value"
+			value="true" />
+
+		<xmlpoke
+			file="${deployerDatabaseManagerConfig}"
+			xpath="${app.settings.path}/add[@key='ScriptFolder']/@value"
+			value="Tarantino.Deployer.Database" />
+
+		<xmlpoke
+			file="${deployerDatabaseManagerConfig}"
+			xpath="${app.settings.path}/add[@key='NAntFolder']/@value"
+			value="NAnt" />
+
+		<property name="zipFile" value="LatestVersion/${project}.zip"/>
+
+		<delete file="${zipFile}" failonerror="false" />
+
+		<zip zipfile="${zipFile}" includeemptydirs="true" >
+			<fileset basedir="${dir.package}">
+				<include name="**" />
+			</fileset>
+		</zip>
+
+    <property name="zipFile" value="LatestVersion/DatabaseManagement.zip"/>
+
+    <delete file="${zipFile}" failonerror="false" />
+
+    <zip zipfile="${zipFile}" includeemptydirs="true" >
+      <fileset basedir="${dir.dbmanager.package}">
+        <include name="**" />
+      </fileset>
+    </zip>
+
+    <property name="zipFile" value="LatestVersion/BatchJobs.zip"/>
+
+    <delete file="${zipFile}" failonerror="false" />
+
+    <zip zipfile="${zipFile}" includeemptydirs="true" >
+      <fileset basedir="${dir.batchjobs.package}">
+        <include name="**" />
+      </fileset>
+    </zip>
+
+    <property name="zipFile" value="LatestVersion/Deployer.zip"/>
+
+    <delete file="${zipFile}" failonerror="false" />
+
+    <zip zipfile="${zipFile}" includeemptydirs="true" >
+      <fileset basedir="${dir.deployer.package}">
+        <include name="**" />
+      </fileset>
+    </zip>
+
+    
+  </target>
+
+	<target name="commit">
+		<exec program="${svn.exe}" workingdir="." commandline="up LatestVersion ${svn.args}" verbose="true" />
+
+		<exec program="${svn.exe}" workingdir="." commandline="ci LatestVersion ${svn.args} -m&quot;automatic check-in ${project.fullversion}&quot;" verbose="true"  />
+	</target>
+
+	<!-- Database change management -->
+	<property name="database.server" value=".\SQLExpress" overwrite="false"/>
+	<property name="database.integrated" value="true" overwrite="false" />
+	<property name="database.username" value="sa" overwrite="false"/>
+	<property name="database.password" value="pwd" overwrite="false"/>
+	<property name="action" value="Update" overwrite="false"/>
+
+	<target name="rebuildDatabases" depends="rebuildDeployerDatabase, rebuildWebManagementDatabase, rebuildDatabaseResearcherDatabase" />
+
+	<target name="updateDeployerDatabase">
+		<property name="action" value="Update" />
+		<call target="manageDeployerDatabase" />
+	</target>
+
+	<target name="rebuildDeployerDatabase">
+		<property name="action" value="Rebuild" />
+		<call target="manageDeployerDatabase" />
+	</target>
+
+	<target name="createDeployerDatabase">
+		<property name="action" value="Create" />
+		<call target="manageDeployerDatabase" />
+	</target>
+
+	<target name="dropDeployerDatabase">
+		<property name="action" value="Drop" />
+		<call target="manageDeployerDatabase" />
+	</target>
+
+	<target name="updateWebManagementDatabase">
+		<property name="action" value="Update" />
+		<call target="manageWebManagementDatabase" />
+	</target>
+
+	<target name="rebuildWebManagementDatabase">
+		<property name="action" value="Rebuild" />
+		<call target="manageWebManagementDatabase" />
+	</target>
+
+	<target name="createWebManagementDatabase">
+		<property name="action" value="Create" />
+		<call target="manageWebManagementDatabase" />
+	</target>
+
+	<target name="dropWebManagementDatabase">
+		<property name="action" value="Drop" />
+		<call target="manageWebManagementDatabase" />
+	</target>
+
+	<target name="rebuildDatabaseResearcherDatabase">
+		<property name="action" value="Rebuild" />
+		<call target="manageDatabaseResearcherDatabase" />
+	</target>
+
+	<target name="manageWebManagementDatabase">
+		<property name="database.name" value="TarantinoWebManagement" />
+		<property name="database.script.directory" value="src\Tarantino.WebManagement.Database" />
+		<call target="manageSqlDatabase" />
+	</target>
+
+	<target name="manageDeployerDatabase">
+		<property name="database.name" value="TarantinoDeployer" />
+		<property name="database.script.directory" value="src\Tarantino.Deployer.Database" />
+		<call target="manageSqlDatabase" />
+	</target>
+
+	<target name="manageDatabaseResearcherDatabase">
+		<property name="database.name" value="TarantinoDatabaseResearcher" />
+		<property name="database.script.directory" value="src\Tarantino.DatabaseResearcher.Database" />
+		<call target="manageSqlDatabase" />
+	</target>
+
+	<target name="manageSqlDatabase">
+		<manageSqlDatabase
+			scriptDirectory="${database.script.directory}"
+			action="${action}"
+			server="${database.server}"
+			integratedAuthentication="${database.integrated}"
+			database="${database.name}"
+			username="${database.username}"
+			password="${database.password}"
+		/>
+
+		<if test="${action != 'Drop'}">
+			<echo message="Current Database Version: ${usdDatabaseVersion}" />
+		</if>
+
+	</target>
+
+</project>
