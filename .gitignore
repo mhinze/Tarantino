@@ -1,14 +1,11 @@
-syntax: glob
-
 Web.Publish.xml
-
+build/
+release/
 *.suo
 *.user
 bin
 Bin
-!/bin
 obj
-[Dd]ebug
 _ReSharper*
 *.csproj.user
 *.resharper.user
@@ -16,11 +13,9 @@ _ReSharper*
 *.cache
 TestResult.xml
 *.trx
-glob:svninfo.xml
 *.log
 *.orig
 _isconfig.xml
 Express/
 *.msi
 setup.exe
-build/
